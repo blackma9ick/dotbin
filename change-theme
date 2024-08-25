@@ -1,0 +1,84 @@
+#!/bin/bash
+#
+# Quickly change the Rosé Pine theme variant across many personal apps.
+#
+# TODO: be theme agnostic.
+
+set -e
+
+########################################
+# Change theme for multiple apps using symbolic linking hacks or sed editing
+# in-place.
+# Arguments:
+#   name: blank for dark theme, '-dawn' for light theme
+#     NOTE: Pay attention to the hyphen in ${name} for light theme!
+#     pretty_name: 'main' for dark theme, 'dawn' for light theme
+#   mode: 'dark', or 'light'
+# Returns:
+#   0 if all themes were succesfully changed (even if the same theme was already
+#   set).
+#   Non-zero on error.
+########################################
+function change_theme() {
+  # GTK
+  gsettings set org.gnome.desktop.interface gtk-theme "rose-pine${name}-gtk"
+  gsettings set org.gnome.desktop.interface color-scheme "prefer-${mode}"
+
+  # TODO: Qt
+
+  cd "${HOME}"/.mozilla/firefox/dq6prhb9.arkenfox
+  ln -sf "userChrome-${pretty_name}.css" chrome/rose-pine/dist/userChrome.css
+  ln -sf "userColors-${pretty_name}.css" chrome/rose-pine/dist/userColors.css
+
+  cd "${XDG_CONFIG_HOME}"/alacritty
+  sed -i "s/rose-pine.*\.toml/rose-pine${name}\.toml/" alacritty.toml
+
+  cd "${XDG_CONFIG_HOME}"/bat
+  if [[ "${pretty_name}" == 'main' ]]; then
+    echo '--theme="OneHalfDark"' >config
+  elif [[ "${pretty_name}" == 'dawn' ]]; then
+    echo '--theme="OneHalfLight"' >config
+  fi
+
+  cd "${XDG_CONFIG_HOME}"/btop
+  ln -sf "rose-pine/rose-pine${name}.theme" themes/theme.theme
+
+  cd "${XDG_CONFIG_HOME}"/dunst
+  ln -sf "../themes/rose-pine/rose-pine${name}.conf" dunstrc.d/01-theme.conf
+
+  cd "${XDG_CONFIG_HOME}"/hypr
+  ln -sf "rose-pine/rose-pine${name}.conf" themes/colors
+  hyprctl reload >/dev/null 2>&1
+
+  cd "${XDG_CONFIG_HOME}"/nvim
+  sed -i "s/variant = \".*\"/variant = \"${pretty_name}\"/" lua/plugins/theme.lua
+
+  cd "${XDG_CONFIG_HOME}"/rofi
+  ln -sf "rose-pine/rose-pine${name}.rasi" themes/theme.rasi
+
+  cd "${XDG_CONFIG_HOME}"/tmux
+  sed -i "s/rose_pine_variant '.*'/rose_pine_variant '${pretty_name}'/" tmux.conf
+  tmux source-file tmux.conf
+
+  cd "${XDG_CONFIG_HOME}"/waybar
+  ln -sf themes/rose-pine/"rose-pine${name}.css" colors
+  killall -SIGUSR2 waybar
+}
+
+case "$1" in
+light | dawn)
+  name='-dawn'
+  pretty_name='dawn'
+  mode='light'
+  change_theme
+  ;;
+dark | main)
+  name=''
+  pretty_name='main'
+  mode='dark'
+  change_theme
+  ;;
+*)
+  printf 'usage: change-theme.sh [light/dawn|dark/main]' >&2
+  ;;
+esac

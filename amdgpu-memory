@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# Gets and prints an amdgpu-supported card's memory calculated utilization,
+# used memory count and available memory count.
+
+readonly CARD=(/sys/class/drm/card*)
+
+used=$(<"${CARD[0]}"/device/mem_info_vram_used)
+total=$(<"${CARD[0]}"/device/mem_info_vram_total)
+usage=$((used * 100 / total))
+
+# bad, yes, but there is no native way to use ordered arrays
+# some of these clauses are for padding the output
+# if [[ "${usage}" == 100 ]] ; then
+#   state='very-high'
+if [[ "${usage}" -ge 90 ]]; then
+  state='very-high'
+elif [[ "${usage}" -ge 75 ]]; then
+  state='high'
+elif [[ "${usage}" -ge 50 ]]; then
+  state='medium'
+elif [[ "${usage}" -ge 25 ]]; then
+  state='low'
+elif [[ "${usage}" -ge 5 ]]; then
+  state='very-low'
+else
+  state=''
+fi
+
+printf '%b\n%b/%b GiB used\r%b/%b GiB available\n%b\n' \
+  "${usage}" \
+  $(echo "${used}" | awk '{printf "%.2f", $1/10**9}') \
+  $(echo "${total}" | awk '{printf "%.2f", $1/10**9}') \
+  $(echo "${total}" "${used}" | awk '{printf "%.2f", ($1-$2)/10**9}') \
+  $(echo "${total}" | awk '{printf "%.2f", $1/10**9}') \
+  "${state}"

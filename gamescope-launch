@@ -1,0 +1,66 @@
+#!/bin/bash
+#
+# Launch Gamescope with predefined options and (depending on mode)
+# provided command.
+
+mode=$1
+declare -a flags
+declare -a embedded_flags
+declare -a nested_flags
+# Only providing --output-height automatically assumes an aspect ratio of 16:9:
+# thus we still get 2560*1440 (QHD).
+#
+# I would love to have unlimited refresh rate but games will not be able to
+# detect something other than 60 Hz otherwise.
+flags=(--output-height 1440 --nested-refresh 144)
+embedded_flags=(--immediate-flips --adaptive-sync --prefer-output 'DP-1')
+nested_flags=(--nested-unfocused-refresh 30 --fullscreen --force-grab-cursor --display-index 'DP-1')
+
+case "${mode}" in
+steam-embedded)
+  if [ -n "$DISPLAY" ]; then
+    printf 'FATAL: Graphical session detected!\n' >&2
+    printf 'Probably you meant to use `steam-nested`?\n' >&2
+    printf '\n' >&2
+    exit 1
+  fi
+
+  flags+=("${embedded_flags[@]}")
+  flags+=(--steam)
+  shift
+  exec /usr/bin/gamescope "${flags[@]}" -- steam -tenfoot -steamos
+  ;;
+steam-nested)
+  flags+=("${nested_flags[@]}")
+  flags+=(--steam)
+  shift
+  exec /usr/bin/gamescope "${flags[@]}" -- steam
+  ;;
+embedded)
+  if [ -n "$DISPLAY" ]; then
+    printf 'FATAL: Graphical session detected!\n' >&2
+    printf 'Probably you meant to use `nested`?\n' >&2
+    printf '\n' >&2
+    exit 1
+  fi
+
+  flags+=("${embedded_flags[@]}")
+  ;;
+nested)
+  flags+=("${nested_flags[@]}")
+  ;;
+*)
+  cat <<'EOF' >&2
+usage: gamescope-launch STEAM_MODE
+	gamescope-launch MODE COMMAND
+STEAM_MODE: steam-embedded
+	steam-nested
+MODE: embedded
+	nested
+EOF
+  exit 1
+  ;;
+esac
+
+shift
+exec /usr/bin/gamescope "${flags[@]}" -- "$@"
