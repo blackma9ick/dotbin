@@ -1,8 +1,6 @@
 #!/bin/bash
 #
 # Quickly change the Rosé Pine theme variant across many personal apps.
-#
-# TODO: be theme agnostic.
 
 set -e
 
@@ -10,8 +8,8 @@ set -e
 # Change theme for multiple apps using symbolic linking hacks or sed editing
 # in-place.
 # Arguments:
-#   name: blank for dark theme, '-dawn' for light theme
-#     NOTE: Pay attention to the hyphen in ${name} for light theme!
+#   name: blank, '-dawn' or '-moon'
+#     NOTE: Pay attention to the hyphens in ${name} for light theme!
 #     pretty_name: 'main' for dark theme, 'dawn' for light theme
 #   mode: 'dark', or 'light'
 # Returns:
@@ -32,11 +30,19 @@ function change_theme() {
 
   cd "${XDG_CONFIG_HOME}"/alacritty
   sed -i "s/rose-pine.*\.toml/rose-pine${name}\.toml/" alacritty.toml
+  sed -i "s/rose-pine.*\.toml/rose-pine${name}\.toml/" alacritty.toml
+  if [[ "${pretty_name}" == "main" || "${pretty_name}" == "moon" ]]; then
+    sed -i '/text =/c text = "#e0def4"' alacritty.toml
+    sed -i '/cursor =/c cursor = "#e0def4"' alacritty.toml
+  elif [[ "${pretty_name}" == "dawn" ]]; then
+    sed -i '/text =/c text = "#575279"' alacritty.toml
+    sed -i '/cursor =/c cursor = "#797593"' alacritty.toml
+  fi
 
   cd "${XDG_CONFIG_HOME}"/bat
-  if [[ "${pretty_name}" == 'main' ]]; then
+  if [[ "${mode}" == 'dark' ]]; then
     echo '--theme="OneHalfDark"' >config
-  elif [[ "${pretty_name}" == 'dawn' ]]; then
+  elif [[ "${mode}" == 'light' ]]; then
     echo '--theme="OneHalfLight"' >config
   fi
 
@@ -78,7 +84,14 @@ dark | main)
   mode='dark'
   change_theme
   ;;
+moon)
+  name='-moon'
+  pretty_name='moon'
+  mode='dark'
+  change_theme
+  ;;
 *)
-  printf 'usage: change-theme.sh [light/dawn|dark/main]' >&2
+  printf 'usage: change-theme [light/dawn|dark/main|moon]\n' >&2
+  exit 1
   ;;
 esac
