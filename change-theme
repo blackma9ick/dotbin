@@ -69,6 +69,8 @@ function change_theme() {
   cd "${XDG_CONFIG_HOME}"/waybar
   ln -sf themes/rose-pine/"rose-pine${name}.css" colors
   killall -SIGUSR2 waybar
+
+  exit
 }
 
 case "$1" in
