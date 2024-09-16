@@ -70,7 +70,7 @@ function change_theme() {
   tmux source-file tmux.conf
 
   cd "${XDG_CONFIG_HOME}"/waybar
-  ln -sf themes/rose-pine/"rose-pine${name}.css" colors
+  ln -sf themes/rose-pine/"rose-pine${name}.css" colors.css
   killall -SIGUSR2 waybar
 
   exit
