@@ -30,7 +30,7 @@ declare -ar CLASSES=(
 
 help() {
   cat <<'EOT' >&2
-usage: amdgpu-query CARD MODE [INTERVAL]
+usage: amdgpu-query CARD MODE INTERVAL
 	CARD: integer (in /sys/class/drm)
 	MODE: usage/memory
 	INTERVAL: integer (seconds)
