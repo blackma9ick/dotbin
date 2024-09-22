@@ -26,10 +26,19 @@ if [[ $1 == 'stop' ]]; then
   done
 else
   service_verb='start'
+help() {
+  printf 'usage: gamemode-autokill start/stop\n' >&2
+}
 
+if [[ $1 == 'stop' ]]; then
+  killall -q "${apps_norestart[@]}"
+elif [[ $1 == 'start' ]]; then
   for app in "${apps[@]}"; do
     /usr/bin/"${app}" &
   done
+else
+  help
+  exit 1
 fi
 
 for service in "${user_services[@]}"; do

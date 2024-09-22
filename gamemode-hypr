@@ -3,6 +3,10 @@
 # Automatically disable some Hyprland decoration and theming options
 # to increase performance.
 
+help() {
+  printf 'usage: gamemode-hypr on/off' >&2
+}
+
 if [[ $1 == 'on' ]]; then
   hyprctl --batch "\
         keyword animations:enabled 0;\
@@ -12,6 +16,9 @@ if [[ $1 == 'on' ]]; then
         keyword general:gaps_out 0;\
         keyword general:border_size 0;\
         keyword decoration:rounding 0"
-  exit
+elif [[ $1 == 'off' ]]; then
+  hyprctl reload
+else
+  help
+  exit 1
 fi
-hyprctl reload
