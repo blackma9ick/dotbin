@@ -29,7 +29,7 @@ function change_theme() {
   ln -sf "userColors-${pretty_name}.css" chrome/rose-pine/dist/userColors.css
 
   cd "${XDG_CONFIG_HOME}"/alacritty
-  sed -i "s/rose-pine.*\.toml/rose-pine${name}\.toml/" alacritty.toml
+  # sed -i "s/rose-pine.*\.toml/rose-pine${name}\.toml/" alacritty.toml
   sed -i "s/rose-pine.*\.toml/rose-pine${name}\.toml/" alacritty.toml
   if [[ "${pretty_name}" == "main" || "${pretty_name}" == "moon" ]]; then
     sed -i '/text =/c text = "#e0def4"' alacritty.toml
