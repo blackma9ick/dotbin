@@ -59,9 +59,6 @@ function change_theme() {
     exit 1
   fi
 
-  cd "${XDG_CONFIG_HOME}"/nvim
-  sed -i "s/variant = \".*\"/variant = \"${pretty_name}\"/" lua/plugins/theme.lua
-
   cd "${XDG_CONFIG_HOME}"/rofi
   ln -sf "rose-pine/rose-pine${name}.rasi" themes/theme.rasi
 
