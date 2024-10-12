@@ -52,7 +52,7 @@ function change_theme() {
   cd "${XDG_CONFIG_HOME}"/dunst
   ln -sf "../themes/rose-pine/rose-pine${name}.conf" dunstrc.d/01-theme.conf
 
-  cd "${XDG_CONFIG_HOME}"/hypr
+  cd "${XDG_CONFIG_HOME}"/hypr/hyprland
   ln -sf "rose-pine/rose-pine${name}.conf" themes/colors
   if ! hyprctl reload >/dev/null 2>&1; then
     printf 'Failed to update for Hyprland.\nInstance Signature out-of-date?\n' >&2
