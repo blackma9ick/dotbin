@@ -10,7 +10,7 @@ set -e
 # Arguments:
 #   name: blank, '-dawn' or '-moon'
 #     NOTE: Pay attention to the hyphens in ${name} for light theme!
-#     pretty_name: 'main' for dark theme, 'dawn' for light theme
+#   pretty_name: 'main', 'dawn' or 'moon'
 #   mode: 'dark', or 'light'
 # Returns:
 #   0 if all themes were succesfully changed (even if the same theme was already
@@ -18,6 +18,9 @@ set -e
 #   Non-zero on error.
 ########################################
 function change_theme() {
+  # File
+  printf 'rose-pine-%s\n' "${pretty_name}" >"$XDG_CONFIG_HOME"/theme
+
   # GTK
   gsettings set org.gnome.desktop.interface gtk-theme "rose-pine${name}-gtk"
   gsettings set org.gnome.desktop.interface color-scheme "prefer-${mode}"
