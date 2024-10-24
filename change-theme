@@ -2,7 +2,7 @@
 #
 # Quickly change the Rosé Pine theme variant across many personal apps.
 
-set -e
+set -x
 
 ########################################
 # Change theme for multiple apps using symbolic linking hacks or sed editing
@@ -27,11 +27,11 @@ function change_theme() {
 
   # TODO: Qt
 
-  cd "${HOME}"/.mozilla/firefox/dq6prhb9.arkenfox
+  cd "${HOME}"/.mozilla/firefox/dq6prhb9.arkenfox || exit
   ln -sf "userChrome-${pretty_name}.css" chrome/rose-pine/dist/userChrome.css
   ln -sf "userColors-${pretty_name}.css" chrome/rose-pine/dist/userColors.css
 
-  cd "${XDG_CONFIG_HOME}"/alacritty
+  cd "${XDG_CONFIG_HOME}"/alacritty || exit
   # sed -i "s/rose-pine.*\.toml/rose-pine${name}\.toml/" alacritty.toml
   sed -i "s/rose-pine.*\.toml/rose-pine${name}\.toml/" alacritty.toml
   if [[ "${pretty_name}" == "main" || "${pretty_name}" == "moon" ]]; then
@@ -42,34 +42,34 @@ function change_theme() {
     sed -i '/cursor =/c cursor = "#797593"' alacritty.toml
   fi
 
-  cd "${XDG_CONFIG_HOME}"/bat
+  cd "${XDG_CONFIG_HOME}"/bat || exit
   if [[ "${mode}" == 'dark' ]]; then
     echo '--theme="OneHalfDark"' >config
   elif [[ "${mode}" == 'light' ]]; then
     echo '--theme="OneHalfLight"' >config
   fi
 
-  cd "${XDG_CONFIG_HOME}"/btop
+  cd "${XDG_CONFIG_HOME}"/btop || exit
   ln -sf "rose-pine/rose-pine${name}.theme" themes/theme.theme
 
-  cd "${XDG_CONFIG_HOME}"/dunst
+  cd "${XDG_CONFIG_HOME}"/dunst || exit
   ln -sf "../themes/rose-pine/rose-pine${name}.conf" dunstrc.d/01-theme.conf
 
-  cd "${XDG_CONFIG_HOME}"/hypr/hyprland
+  cd "${XDG_CONFIG_HOME}"/hypr/hyprland || exit
   ln -sf "rose-pine/rose-pine${name}.conf" themes/colors
   if ! hyprctl reload >/dev/null 2>&1; then
     printf 'Failed to update for Hyprland.\nInstance Signature out-of-date?\n' >&2
     exit 1
   fi
 
-  cd "${XDG_CONFIG_HOME}"/rofi
+  cd "${XDG_CONFIG_HOME}"/rofi || exit
   ln -sf "rose-pine/rose-pine${name}.rasi" themes/theme.rasi
 
-  cd "${XDG_CONFIG_HOME}"/tmux
+  cd "${XDG_CONFIG_HOME}"/tmux || exit
   sed -i "s/rose_pine_variant '.*'/rose_pine_variant '${pretty_name}'/" tmux.conf
   tmux source-file tmux.conf
 
-  cd "${XDG_CONFIG_HOME}"/waybar
+  cd "${XDG_CONFIG_HOME}"/waybar || exit
   ln -sf themes/rose-pine/"rose-pine${name}.css" colors.css
   killall -SIGUSR2 waybar
 
