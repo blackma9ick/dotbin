@@ -61,7 +61,6 @@ function change_theme() {
   ln -sf "rose-pine/rose-pine${name}.conf" themes/colors
   if ! hyprctl reload >/dev/null 2>&1; then
     printf 'Failed to update for Hyprland.\nInstance Signature out-of-date?\n' >&2
-    exit 1
   fi
 
   cd "${XDG_CONFIG_HOME}"/rofi || exit
