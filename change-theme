@@ -27,7 +27,9 @@ function change_theme() {
 
   # TODO: Qt
 
-  cd "${HOME}"/.mozilla/firefox/dq6prhb9.arkenfox || exit
+  # Not present on my Termux.
+  # shellcheck disable=2164
+  cd "${HOME}"/.mozilla/firefox/dq6prhb9.arkenfox
   ln -sf "userChrome-${pretty_name}.css" chrome/rose-pine/dist/userChrome.css
   ln -sf "userColors-${pretty_name}.css" chrome/rose-pine/dist/userColors.css
 
