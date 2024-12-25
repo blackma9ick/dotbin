@@ -8,22 +8,32 @@ mode=$1
 declare -a flags
 declare -a embedded_flags
 declare -a nested_flags
-# Only providing --output-height automatically assumes an aspect ratio of 16:9:
-# thus we still get 2560*1440 (QHD).
-#
 # I would love to have unlimited refresh rate but games will not be able to
 # detect something other than 60 Hz otherwise.
-flags=(--output-height 1440 --nested-refresh 144)
+flags=(
+  # Implies 2560*1440 (16:9).
+  --output-height 1440
+  --nested-refresh 144
+)
 embedded_flags=(--immediate-flips --adaptive-sync --prefer-output 'DP-1')
 nested_flags=(--nested-unfocused-refresh 30 --fullscreen --force-grab-cursor --display-index 'DP-1')
 
 help() {
   cat <<'EOT' >&2
-usage: gamescope-launch STEAM_MODE
+gamescope-launch
+
+Launch Gamescope with predefined options and/or provided command.
+
+usage:
+  gamescope-launch STEAM_MODE
 	gamescope-launch MODE COMMAND
-STEAM_MODE: steam-embedded
+
+STEAM_MODE:
+  steam-embedded
 	steam-nested
-MODE: embedded
+
+MODE:
+  embedded
 	nested
 EOT
 }
@@ -41,13 +51,13 @@ steam-embedded)
   flags+=("${embedded_flags[@]}")
   flags+=(--steam)
   shift
-  exec /usr/bin/gamescope "${flags[@]}" -- steam -tenfoot -steamos
+  exec /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- steam -tenfoot -steamos
   ;;
 steam-nested)
   flags+=("${nested_flags[@]}")
   flags+=(--steam)
   shift
-  exec /usr/bin/gamescope "${flags[@]}" -- steam
+  exec /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- steam
   ;;
 embedded)
   if [ -n "$DISPLAY" ]; then
@@ -70,4 +80,4 @@ nested)
 esac
 
 shift
-exec /usr/bin/gamescope "${flags[@]}" -- "$@"
+exec /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- "$@"
