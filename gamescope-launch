@@ -17,6 +17,8 @@ flags=(
 )
 embedded_flags=(--immediate-flips --adaptive-sync --prefer-output 'DP-1')
 nested_flags=(--nested-unfocused-refresh 30 --fullscreen --force-grab-cursor --display-index 'DP-1')
+# Workaround for --force-grab-cursor doing fuck-all.
+# nested_flags+=(--backend sdl)
 
 help() {
   cat <<'EOT' >&2
@@ -25,25 +27,21 @@ gamescope-launch
 Launch Gamescope with predefined options and/or provided command.
 
 usage:
-  gamescope-launch STEAM_MODE
 	gamescope-launch MODE COMMAND
-
-STEAM_MODE:
-  steam-embedded
-	steam-nested
+  gamescope-launch embedded
 
 MODE:
-  embedded
 	nested
+	nested-steam
 EOT
 }
 
 case "${mode}" in
-steam-embedded)
+embedded)
   if [ -n "$DISPLAY" ]; then
     cat <<-EOT >&2
 			FATAL: Graphical session detected!
-			Probably you meant to use “steam-nested”?
+			Probably you meant to use nested/nested-steam mode?
 			EOT
     exit 2
   fi
@@ -53,22 +51,9 @@ steam-embedded)
   shift
   exec /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- steam -tenfoot -steamos
   ;;
-steam-nested)
+nested-steam)
   flags+=("${nested_flags[@]}")
   flags+=(--steam)
-  shift
-  exec /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- steam
-  ;;
-embedded)
-  if [ -n "$DISPLAY" ]; then
-    cat <<-EOT >&2
-			FATAL: Graphical session detected!
-			Probably you meant to use “nested”?
-			EOT
-    exit 2
-  fi
-
-  flags+=("${embedded_flags[@]}")
   ;;
 nested)
   flags+=("${nested_flags[@]}")
@@ -80,4 +65,4 @@ nested)
 esac
 
 shift
-exec /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- "$@"
+exec /usr/bin/gamescope "${flags[@]}" -- "$@"
