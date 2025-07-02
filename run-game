@@ -1,10 +1,8 @@
 #!/bin/bash
 # shellcheck disable=1111
 #
-# Launch Gamescope with predefined options and (depending on mode)
-# provided command.
+# Launch a game with Gamescope and predefined options.
 
-mode=$1
 declare -a flags
 declare -a embedded_flags
 declare -a nested_flags
@@ -22,26 +20,27 @@ nested_flags=(--nested-unfocused-refresh 30 --fullscreen --force-grab-cursor --d
 
 help() {
   cat <<'EOT' >&2
-gamescope-launch
+run-game
 
-Launch Gamescope with predefined options and/or provided command.
+Launch a game with Gamescope and predefined options.
 
 usage:
-	gamescope-launch MODE COMMAND
-  gamescope-launch embedded
+	run-game -n %command%
+	run-game -s
+	run-game -e
 
-MODE:
-	nested
-	nested-steam
+	-n: nested mode
+	-s: nested steam mode
+	-e: embedded mode
 EOT
 }
 
-case "${mode}" in
-embedded)
+case $1 in
+-e)
   if [ -n "$DISPLAY" ]; then
     cat <<-EOT >&2
 			FATAL: Graphical session detected!
-			Probably you meant to use nested/nested-steam mode?
+			Probably you meant to use nested (-n) or nested steam (-s) mode?
 			EOT
     exit 2
   fi
@@ -49,20 +48,21 @@ embedded)
   flags+=("${embedded_flags[@]}")
   flags+=(--steam)
   shift
-  exec /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- steam -tenfoot -steamos
+  exec /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- /usr/bin/steam -tenfoot -steamos
   ;;
-nested-steam)
+-s)
   flags+=("${nested_flags[@]}")
   flags+=(--steam)
+  shift
+  exec /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- /usr/bin/steam
   ;;
-nested)
+-n)
   flags+=("${nested_flags[@]}")
+  shift
+  exec /usr/bin/env -u LD_PRELOAD /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- "$@"
   ;;
 *)
   help
   exit 1
   ;;
 esac
-
-shift
-exec /usr/bin/gamescope "${flags[@]}" -- "$@"
