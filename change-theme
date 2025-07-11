@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 #
 # Quickly change the Rosé Pine theme variant across many personal apps.
 # TODO: migrate all "if statements" to a function?

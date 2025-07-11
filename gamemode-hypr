@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 #
 # Automatically disable some Hyprland decoration and theming options
 # to increase performance.

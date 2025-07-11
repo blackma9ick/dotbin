@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 #
 # Launches or kills hypridle when run, depending on hypridle's state.
 # Works like a toggle.

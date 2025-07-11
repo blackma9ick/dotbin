@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 #
 # Automatically kill select apps, services, and optionally relaunch them.
 
@@ -26,7 +26,7 @@ if [[ $1 == 'stop' ]]; then
   killall -q "${apps_norestart[@]}"
 elif [[ $1 == 'start' ]]; then
   for app in "${apps[@]}"; do
-    /bin/"${app}" &
+    /usr/bin/"${app}" &
   done
 else
   help

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 #
 # JSON module script that queries usage, memory, and other statistics from an
 # AMDGPU card.

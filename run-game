@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 # shellcheck disable=1111
 #
 # Launch a game with Gamescope and predefined options.
@@ -9,9 +9,9 @@ declare -a nested_flags
 # I would love to have unlimited refresh rate but games will not be able to
 # detect something other than 60 Hz otherwise.
 flags=(
-  # Implies 2560*1440 (16:9).
-  --output-height 1440
-  --nested-refresh 144
+	# Implies 2560*1440 (16:9).
+	--output-height 1440
+	--nested-refresh 144
 )
 embedded_flags=(--immediate-flips --adaptive-sync --prefer-output 'DP-1')
 nested_flags=(--nested-unfocused-refresh 30 --fullscreen --force-grab-cursor --display-index 'DP-1')
@@ -19,7 +19,7 @@ nested_flags=(--nested-unfocused-refresh 30 --fullscreen --force-grab-cursor --d
 # nested_flags+=(--backend sdl)
 
 help() {
-  cat <<'EOT' >&2
+	cat <<'EOT' >&2
 run-game
 
 Launch a game with Gamescope and predefined options.
@@ -37,32 +37,32 @@ EOT
 
 case $1 in
 -e)
-  if [ -n "$DISPLAY" ]; then
-    cat <<-EOT >&2
+	if [ -n "$DISPLAY" ]; then
+		cat <<-EOT >&2
 			FATAL: Graphical session detected!
 			Probably you meant to use nested (-n) or nested steam (-s) mode?
-			EOT
-    exit 2
-  fi
+		EOT
+		exit 2
+	fi
 
-  flags+=("${embedded_flags[@]}")
-  flags+=(--steam)
-  shift
-  exec /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- /usr/bin/steam -tenfoot -steamos
-  ;;
+	flags+=("${embedded_flags[@]}")
+	flags+=(--steam)
+	shift
+	exec /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- /usr/bin/steam -tenfoot -steamos
+	;;
 -s)
-  flags+=("${nested_flags[@]}")
-  flags+=(--steam)
-  shift
-  exec /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- /usr/bin/steam
-  ;;
+	flags+=("${nested_flags[@]}")
+	flags+=(--steam)
+	shift
+	exec /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- /usr/bin/steam
+	;;
 -n)
-  flags+=("${nested_flags[@]}")
-  shift
-  exec /usr/bin/env -u LD_PRELOAD /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- "$@"
-  ;;
+	flags+=("${nested_flags[@]}")
+	shift
+	exec /usr/bin/env -u LD_PRELOAD /usr/bin/gamemoderun /usr/bin/gamescope "${flags[@]}" -- "$@"
+	;;
 *)
-  help
-  exit 1
-  ;;
+	help
+	exit 1
+	;;
 esac
